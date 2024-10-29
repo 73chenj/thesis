@@ -1,0 +1,13 @@
+**/__pycache__
+
+# LaTeX files
+**/*.aux
+**/*.log
+**/*.out
+**/*.toc
+
+# PDFs in src directory
+src/**/*.pdf
+
+# book images
+book/**/*.png
