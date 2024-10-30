@@ -124,8 +124,8 @@ for i in range(len(cr3bp_states_capstone)):
     #print(i)
     cr3bp_et_capstone_EKF, cr3bp_states_capstone_EKF = cr3bp.propagate_orbit(prev_state_capstone_EKF, tspan=timestep*2.66381e-6)
     cr3bp_et_ELFO_EKF, cr3bp_states_ELFO_EKF = cr3bp.propagate_orbit(prev_state_ELFO_EKF, tspan=timestep*2.66381e-6)
-    cr3bp_states_capstone_EKF[-1] += np.array([np.random.normal(0, 0.000001), np.random.normal(0, 0.000001), np.random.normal(0, 0.000001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000000
-    cr3bp_states_ELFO_EKF[-1] += np.array([np.random.normal(0, 0.000001), np.random.normal(0, 0.000001), np.random.normal(0, 0.000001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000000
+    cr3bp_states_capstone_EKF[-1] += np.array([np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000000
+    cr3bp_states_ELFO_EKF[-1] += np.array([np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000000
 
     # Calculate Kalman Gain
     H_jacobian = calculate_H_jacobian(np.concatenate([prev_state_capstone_EKF, prev_state_ELFO_EKF]), state_to_measurements)
