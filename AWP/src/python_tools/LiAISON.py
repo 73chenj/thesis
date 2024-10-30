@@ -113,7 +113,7 @@ def calculate_H_jacobian(state, f, epsilon=1e-7):
 
 measurement_covariance = np.diag([1/d, 0.00001])
 prev_state_covariance_matrix = np.diag([1/d, 1/d, 1/d, 0.0001, 0.0001, 0.0001, 1/d, 1/d, 1/d, 0.0001, 0.0001, 0.0001]) # Initial covariance
-prediction_covariance = np.diag([1/d, 1/d, 1/d, 0.0001, 0.0001, 0.0001, 1/d, 1/d, 1/d, 0.0001, 0.0001, 0.0001])/1000000 # Picking a very tiny prediction covariance
+prediction_covariance = np.diag([1/d, 1/d, 1/d, 0.0001, 0.0001, 0.0001, 1/d, 1/d, 1/d, 0.0001, 0.0001, 0.0001])/1000 # Picking a very tiny prediction covariance
 
 # The actual Kalman Filter
 prev_state_capstone_EKF = capstone_init
@@ -124,8 +124,8 @@ for i in range(len(cr3bp_states_capstone)):
     #print(i)
     cr3bp_et_capstone_EKF, cr3bp_states_capstone_EKF = cr3bp.propagate_orbit(prev_state_capstone_EKF, tspan=timestep*2.66381e-6)
     cr3bp_et_ELFO_EKF, cr3bp_states_ELFO_EKF = cr3bp.propagate_orbit(prev_state_ELFO_EKF, tspan=timestep*2.66381e-6)
-    cr3bp_states_capstone_EKF[-1] += np.array([np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000000
-    cr3bp_states_ELFO_EKF[-1] += np.array([np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000000
+    cr3bp_states_capstone_EKF[-1] += np.array([np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000
+    cr3bp_states_ELFO_EKF[-1] += np.array([np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 1/d), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001), np.random.normal(0, 0.0001)])/1000
 
     # Calculate Kalman Gain
     H_jacobian = calculate_H_jacobian(np.concatenate([prev_state_capstone_EKF, prev_state_ELFO_EKF]), state_to_measurements)
