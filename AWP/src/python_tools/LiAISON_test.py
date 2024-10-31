@@ -19,7 +19,7 @@ print(seq_capstone[0])
 
 def convert(state_j2000):
     d = 384400  # Distance between the two bodies (e.g., Earth-Moon distance in km)
-    T = 27.322 * 86400  # Orbital period (Moon's orbital period in seconds)
+    T = 2*np.pi  # Orbital period (Moon's orbital period in seconds)
 
     # Positions of the primary bodies in J2000 coordinates (example values)
     # Earth position
@@ -39,9 +39,9 @@ def convert(state_j2000):
     print(state_j2000[0]/d)
 
     # Convert velocity to CR3BP coordinates
-    vx_cr3bp = state_j2000[3] * T / d
-    vy_cr3bp = state_j2000[4] * T / d
-    vz_cr3bp = state_j2000[5] * T / d
+    vx_cr3bp = state_j2000[3] / T
+    vy_cr3bp = state_j2000[4] / T
+    vz_cr3bp = state_j2000[5] / T
 
     # New state in CR3BP coordinates
     return np.array([x_cr3bp + 1, y_cr3bp, z_cr3bp, vx_cr3bp, vy_cr3bp, vz_cr3bp])
@@ -54,6 +54,6 @@ cr3bp = CR3BP('earth-moon')
 capstone_prev = capstone_init = [state_cr3bp]
 # To make sure the time step is constant
 cr3bp_states_capstone = [capstone_init]
-cr3bp_et_capstone, cr3bp_state_capstone = cr3bp.propagate_orbit(state_cr3bp, tspan=2)
+cr3bp_et_capstone, cr3bp_state_capstone = cr3bp.propagate_orbit(state_cr3bp, tspan=0.921)
 
 cr3bp.plot_3d()

@@ -20,7 +20,7 @@ ax = plt.axes(projection='3d')
 
 ### User's choice
 MoonSphere =  0                                 #1 if the Moon is drawn as a sphere, 0 for a point
-RotationalF = 1                                 #Plot the sequential in the Earth-Moon rotational frame (0=inertial)
+RotationalF = 0                                 #Plot the sequential in the Earth-Moon rotational frame (0=inertial)
 Converged =   0                                 #Plot the initial and converged trajectory (for optimization mode)
 earth =       1                                 #Plot the earth (only in rotat. frame)
 model =       0                                 #Plot the CR3BP trajectory (for optimization mode)
@@ -28,7 +28,7 @@ model =       0                                 #Plot the CR3BP trajectory (for 
 path = "input/statesNRHOCapstone.csv"
 
 ### Load the computed data
-mat = read_mat('MATLAB/HALO/output/ORBdataClementine.mat')
+mat = read_mat('MATLAB/HALO/output/ORBdataCapstone.mat')
 
 for e in list(mat["orb"]["seq"].keys())[1:]:
     Ssat = mat["orb"]["seq"][e]["XJ2000"]               #States of the satellite in J2000
