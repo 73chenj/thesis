@@ -25,16 +25,21 @@ time_seq_ELFO = mat_ELFO['orb']['seq']['a']['t'] - mat_ELFO['orb']['seq']['a']['
 d = 384400
 cr3bp = CR3BP('earth-moon')
 # Using the same starting states of Capstone and Clementine but transformed into CR3BP propagator coordinates
-capstone_prev = capstone_init = [0.98772 + seq_capstone[0][0]/d, seq_capstone[0][1]/d, seq_capstone[0][2]/d, seq_capstone[0][3], seq_capstone[0][4], seq_capstone[0][5]]
-ELFO_prev = ELFO_init = [0.98772 + seq_ELFO[0][0]/d, seq_ELFO[0][1]/d, seq_ELFO[0][2]/d, seq_ELFO[0][3], seq_ELFO[0][4], seq_ELFO[0][5]]
-test_et_capstone, test_states_capstone = cr3bp.propagate_orbit(capstone_init, tspan=0.0001) # 0.921 is 4 days in the normalised time units
+capstone_prev = capstone_init = [0.98772 + seq_capstone[0][0]/d, seq_capstone[0][1]/d, seq_capstone[0][2]/d, seq_capstone[0][3]/d, seq_capstone[0][4]/d, seq_capstone[0][5]/d]
+ELFO_prev = ELFO_init = [0.98772 + seq_ELFO[0][0]/d, seq_ELFO[0][1]/d, seq_ELFO[0][2]/d, seq_ELFO[0][3]/d, seq_ELFO[0][4]/d, seq_ELFO[0][5]/d]
+test_et_capstone, test_states_capstone = cr3bp.propagate_orbit(capstone_init, tspan=1.8) # 0.921 is 4 days in the normalised time units
 
+# np.random.seed(seed=19)
+# np.random.seed(seed=1701)
+# np.random.seed(seed=501)
+# np.random.seed(seed=212)
+# np.random.seed(seed=66)
 # To make sure the time step is constant. Basically propagating every 30 seconds without any random noise until the end of the 4 days and using those values as the ground truth.
 # Need to do this because the CR3BP propagator does not have constant timesteps.
 timestep = 30 # seconds
 cr3bp_states_capstone = [capstone_init]
 cr3bp_states_ELFO = [ELFO_init]
-for i in range(int(1/(timestep*2.663811e-6))):
+for i in range(int(0.921/(timestep*2.663811e-6))):
     #print(i)
     cr3bp_et_capstone, cr3bp_state_capstone = cr3bp.propagate_orbit(capstone_prev, tspan=timestep*2.663811e-6) # 2.663811e-6 is one second in the normalised time units
     cr3bp_et_ELFO, cr3bp_state_ELFO = cr3bp.propagate_orbit(ELFO_prev, tspan=timestep*2.663811e-6)
@@ -119,7 +124,7 @@ prediction_covariance = np.diag([1/d, 1/d, 1/d, 0.0001, 0.0001, 0.0001, 1/d, 1/d
 prev_state_capstone_EKF = capstone_init
 prev_state_ELFO_EKF = ELFO_init
 bad_measurements = []
-capstone_x = []
+ELFO_z = []
 for i in range(len(cr3bp_states_capstone)):
     #print(i)
     cr3bp_et_capstone_EKF, cr3bp_states_capstone_EKF = cr3bp.propagate_orbit(prev_state_capstone_EKF, tspan=timestep*2.66381e-6)
@@ -139,13 +144,12 @@ for i in range(len(cr3bp_states_capstone)):
     pred_measurements = np.array([pred_range, pred_range_rate])
     bad_measurements.append(pred_measurements)
     a_posteriori = full_prediction_vector + kalman_gain @ (measurements[i] - pred_measurements)
-    capstone_x.append(a_posteriori[0])
+    ELFO_z.append(a_posteriori[8])
     
     # Updating for next step
     prev_state_capstone_EKF = a_posteriori[0:6]
     prev_state_ELFO_EKF = a_posteriori[6:12]
     prev_state_covariance_matrix = (np.identity(12) - kalman_gain @ H_jacobian) @ state_covariance_matrix
-    # print(state_covariance_matrix)
 
 test_et_capstone, test_states_capstone = cr3bp.propagate_orbit(capstone_init, tspan=0.921)
 test_et_ELFO, test_states_ELFO = cr3bp.propagate_orbit(ELFO_init, tspan=0.921)
@@ -155,7 +159,8 @@ print(np.concatenate((test_states_capstone[-1], test_states_ELFO[-1])))
 print(np.concatenate((cr3bp_states_capstone[-1], cr3bp_states_ELFO[-1])))
 print(a_posteriori)
 print(state_to_measurements(a_posteriori))
-print(np.linalg.norm(np.concatenate((cr3bp_states_capstone[-1], cr3bp_states_capstone[-1])) - a_posteriori))
+print(np.linalg.norm(a_posteriori[6:9] - a_posteriori[0:3]))
+print(np.linalg.norm(test_states_ELFO[-1][0:3] - test_states_capstone[-1][0:3]))
 
 # Plotting the range
 # Extract x and y values
@@ -173,16 +178,32 @@ plt.title('Range rate vs Time')
 # Show the plot
 plt.show()
 
-# Plotting the y coordinate of capstone
+# Plotting the range
 # Extract x and y values
 x_values = time_seq_capstone
-y_values = capstone_x[0:len(x_values)]
+y_values = [arr[0] for arr in measurements][0:len(x_values)]
 
 # Create the plot
 plt.plot(x_values, y_values, marker='o')
 
 # Add labels and title
 plt.xlabel('Time (seconds)')
-plt.ylabel('Capstone Y (Earth to Moon distances)')
-plt.title('Capstone Y vs Time')
+plt.ylabel('Range rate')
+plt.title('Range rate vs Time')
+
+# Show the plot
 plt.show()
+
+# # Plotting the y coordinate of capstone
+# # Extract x and y values
+# x_values = time_seq_capstone
+# y_values = ELFO_z[0:len(x_values)]
+
+# # Create the plot
+# plt.plot(x_values, y_values, marker='o')
+
+# # Add labels and title
+# plt.xlabel('Time (seconds)')
+# plt.ylabel('ELFO z (Earth to Moon distances)')
+# plt.title('ELFO z vs Time')
+# plt.show()
