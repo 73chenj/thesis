@@ -7,8 +7,6 @@ Frame of reference is rotational centred at the barycentre of earth and moon
 The unit of time is normalised such that the orbital period of the moon around the Earth is 2pi
 
 state vector is [x1, y1, z1, vx1, vy1, vz1, x2, y2, z2, vx2, vy2, vz2]
-
-Yang did some weird shit with the plotting it still plots the same stuff but just ordered weirdly need to make sense of that
 """
 
 import numpy as np
